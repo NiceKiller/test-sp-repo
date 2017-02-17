@@ -3,6 +3,8 @@ package driver;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import utils.OsCheck;
 
 import java.util.concurrent.TimeUnit;
@@ -24,32 +26,48 @@ public class WebDriverCreators {
         return driver;
     };
 
-    public static final WebDriverCreator DEFAULT = CHROME;
+    public static final WebDriverCreator IE = () -> {
+        if(checkOsAndSetSystemProperty()!= OsCheck.OSType.Windows){
+            throw new IllegalStateException("IE driver will work only on windows");
+        }
+        DesiredCapabilities ieCapabilities = DesiredCapabilities.internetExplorer();
+
+        ieCapabilities.setCapability("nativeEvents", false);
+        ieCapabilities.setCapability("unexpectedAlertBehaviour", "accept");
+        ieCapabilities.setCapability("ignoreProtectedModeSettings", true);
+        ieCapabilities.setCapability("disable-popup-blocking", true);
+        ieCapabilities.setCapability("enablePersistentHover", true);
+        ieCapabilities.setCapability(InternetExplorerDriver.IE_ENSURE_CLEAN_SESSION, true);
+        ieCapabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
+        ieCapabilities.setCapability(InternetExplorerDriver.IGNORE_ZOOM_SETTING, true);
+        InternetExplorerDriver driver = new InternetExplorerDriver(ieCapabilities);
+        setDefaultSettings(driver);
+        return driver;
+    };
+
+    public static final WebDriverCreator DEFAULT = IE;
 
     private static void setDefaultSettings(WebDriver driver) {
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS)
+                .pageLoadTimeout(180, TimeUnit.SECONDS);
     }
 
-    private static String checkOsAndSetSystemProperty() {
-        String path = null;
+    private static OsCheck.OSType checkOsAndSetSystemProperty() {
         OsCheck.OSType osType = OsCheck.getOperatingSystemType();
         switch (osType) {
             case Windows:
                 System.setProperty("webdriver.chrome.driver", "src\\main\\resources\\drivers\\chrome\\chromedriver_win.exe");
-                System.setProperty("webdriver.gecko.driver", "src\\main\\resources\\drivers\\gecko\\geckodriver_win.exe");
+                System.setProperty("webdriver.ie.driver", "src\\main\\resources\\drivers\\ie\\IEDriverServer.exe");
                 break;
             case Linux:
                 System.setProperty("webdriver.chrome.driver", "src\\main\\resources\\drivers\\chrome\\chromedriver_linux.exe");
-                System.setProperty("webdriver.gecko.driver", "src\\main\\resources\\drivers\\gecko\\geckodriver_linux.exe");
                 break;
             case MacOS:
                 System.setProperty("webdriver.chrome.driver", "src\\main\\resources\\drivers\\chrome\\chromedriver_mac.exe");
-                System.setProperty("webdriver.gecko.driver", "src\\main\\resources\\drivers\\gecko\\geckodriver_mac.exe");
                 break;
         }
-
-        return path;
+        return osType;
     }
 
 }

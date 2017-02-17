@@ -16,7 +16,9 @@
         <dependencies.apache.common.version>1.3.2</dependencies.apache.common.version>
         <dependencies.slf4j.version>1.5.11</dependencies.slf4j.version>
         <aspectj.version>1.8.9</aspectj.version>
-        <allure.version>1.4.23.HOTFIX1</allure.version>
+        <allure.version>1.5.0</allure.version>
+        <allure.cucumber.version>1.6.1</allure.cucumber.version>
+        <cucumber.version>1.2.5</cucumber.version>
     </properties>
 
 
@@ -26,6 +28,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -38,11 +41,6 @@
                 <version>2.19.1</version>
                 <dependencies>
                     <dependency>
-                        <groupId>org.apache.maven.surefire</groupId>
-                        <artifactId>surefire-junit47</artifactId>
-                        <version>2.19.1</version>
-                    </dependency>
-                    <dependency>
                         <groupId>org.aspectj</groupId>
                         <artifactId>aspectjweaver</artifactId>
                         <version>${aspectj.version}</version>
@@ -52,20 +50,16 @@
                     <reuseForks>false</reuseForks>
                     <forkCount>1</forkCount>
                     <parallel>methods</parallel>
-                    <threadCount>4</threadCount>
+                    <threadCount>1</threadCount>
                     <includes>
                         <include>**/*Test.java</include>
+                        <include>**/RunAllFeatures.java</include>
                     </includes>
                     <testFailureIgnore>false</testFailureIgnore>
                     <argLine>
                         -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar
+                        -Dcucumber.options="--plugin ru.yandex.qatools.allure.cucumberjvm.AllureReporter"
                     </argLine>
-                    <properties>
-                        <property>
-                            <name>listener</name>
-                            <value>ru.yandex.qatools.allure.junit.AllureRunListener</value>
-                        </property>
-                    </properties>
                 </configuration>
             </plugin>
 
@@ -108,6 +102,18 @@
             <version>${dependencies.assertj.version}</version>
         </dependency>
         <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-java8</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-io</artifactId>
             <version>${dependencies.apache.common.version}</version>
@@ -119,8 +125,8 @@
         </dependency>
         <dependency>
             <groupId>ru.yandex.qatools.allure</groupId>
-            <artifactId>allure-junit-adaptor</artifactId>
-            <version>${allure.version}</version>
+            <artifactId>allure-cucumber-jvm-adaptor</artifactId>
+            <version>${allure.cucumber.version}</version>
         </dependency>
     </dependencies>
 
