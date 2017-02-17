@@ -25,7 +25,9 @@ source https://github.com/SeleniumHQ/selenium/wiki/InternetExplorerDriver#requir
 
 Before test run go to test/java/features/ClaimsHandler.feature
 and update this line with correct username and password
+```
 When user log in to https://supplier01.scalepoint.com/eccAdmin/gb/login.action with username set_user_here and password set_password_here
+```
 
 ## Test run
 
